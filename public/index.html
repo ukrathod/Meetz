@@ -2023,6 +2023,138 @@ function applyFilters(){
 /* ═══════════════════════════════════════════════
    FRIENDS
 ═══════════════════════════════════════════════ */
+
+
+  /* ═══════════════════════════════════════════════
+   FRIEND CALLING SYSTEM
+═══════════════════════════════════════════════ */
+let activeCall = null; // { friendId, friendName, friendAvatar }
+let incomingCall = null; // { callerId, callerName, callerAvatar }
+
+// Caller: initiate a call to a friend
+function callFriend(friendId, friendName, friendAvatar) {
+  activeCall = { friendId, friendName, friendAvatar };
+  // Show outgoing "ringing" UI
+  document.getElementById('callWaitingName').textContent = friendName;
+  document.getElementById('callWaiting').classList.add('show');
+  // Tell server to ring the friend
+  socket.emit('call-friend', { targetId: friendId, callerName: S.name, callerAvatar: friendAvatar });
+  // Auto-cancel after 30s if no answer
+  activeCall.timeout = setTimeout(() => {
+    cancelCall();
+    toast(`📵 ${friendName} didn't answer`);
+  }, 30000);
+}
+
+// Caller: cancel outgoing call
+function cancelCall() {
+  clearTimeout(activeCall?.timeout);
+  document.getElementById('callWaiting').classList.remove('show');
+  if (activeCall) {
+    socket.emit('call-cancelled', { targetId: activeCall.friendId });
+    activeCall = null;
+  }
+}
+
+// Receiver: accept incoming call
+function acceptCall() {
+  document.getElementById('callNotify').classList.remove('show');
+  if (!incomingCall) return;
+  socket.emit('call-accepted', { callerId: incomingCall.callerId });
+  // Set up a private session with the caller
+  S.isBot = false;
+  S.partnerId = incomingCall.callerId;
+  buildStranger({
+    name: incomingCall.callerName,
+    gender: 'any', mood: 'chill', country: 'any'
+  }, 'friend-call');
+  enterChat(true);
+  incomingCall = null;
+}
+
+// Receiver: reject incoming call
+function rejectCall() {
+  document.getElementById('callNotify').classList.remove('show');
+  if (!incomingCall) return;
+  socket.emit('call-rejected', { callerId: incomingCall.callerId });
+  incomingCall = null;
+  toast('Call ignored');
+}
+
+// Socket: incoming call from a friend
+socket.on('incoming-call', ({ callerId, callerName, callerAvatar }) => {
+  incomingCall = { callerId, callerName, callerAvatar };
+  document.getElementById('callCallerName').textContent = callerName;
+  document.getElementById('callAvEmoji').textContent = callerAvatar || '😊';
+  document.getElementById('callNotify').classList.add('show');
+  // Auto-dismiss after 30s
+  setTimeout(() => {
+    if (incomingCall) {
+      document.getElementById('callNotify').classList.remove('show');
+      incomingCall = null;
+    }
+  }, 30000);
+});
+
+// Socket: your call was accepted — start WebRTC
+socket.on('call-was-accepted', ({ acceptorId }) => {
+  clearTimeout(activeCall?.timeout);
+  document.getElementById('callWaiting').classList.remove('show');
+  if (!activeCall) return;
+  S.isBot = false;
+  S.partnerId = acceptorId;
+  buildStranger({
+    name: activeCall.friendName,
+    gender: 'any', mood: 'chill', country: 'any'
+  }, 'friend-call');
+  enterChat(false); // not initiator — acceptor creates offer
+  activeCall = null;
+  toast(`✅ Connected to ${S.stranger?.name}!`);
+});
+
+// Socket: your call was rejected
+socket.on('call-was-rejected', () => {
+  clearTimeout(activeCall?.timeout);
+  document.getElementById('callWaiting').classList.remove('show');
+  toast(`📵 ${activeCall?.friendName || 'Friend'} is busy right now`);
+  activeCall = null;
+});
+
+// Socket: call was cancelled by caller
+socket.on('call-was-cancelled', () => {
+  document.getElementById('callNotify').classList.remove('show');
+  incomingCall = null;
+  toast('📵 Caller hung up');
+});
+
+/* ── CAMERA FLIP (mobile) ── */
+let currentFacingMode = 'user';
+async function flipCamera() {
+  if (!S.camOn) { toast('Turn camera on first 📹'); return; }
+  currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+  try {
+    const newStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: currentFacingMode }, audio: false
+    });
+    const newTrack = newStream.getVideoTracks()[0];
+    // Replace in local video
+    const lv = document.getElementById('localVideo');
+    lv.srcObject = newStream;
+    // Replace in peer connection if active
+    if (S.pc) {
+      const sender = S.pc.getSenders().find(s => s.track?.kind === 'video');
+      if (sender) await sender.replaceTrack(newTrack);
+    }
+    // Stop old video tracks
+    S.localStream?.getVideoTracks().forEach(t => { if (t !== newTrack) t.stop(); });
+    toast(currentFacingMode === 'user' ? '🤳 Front camera' : '📷 Back camera');
+  } catch(e) {
+    toast('⚠️ Camera flip failed');
+    currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user'; // revert
+  }
+}
+
+
 function saveFriend(){
   if(!S.stranger)return;
   if(S.friends.find(f=>f.name===S.stranger.name&&f.country===S.stranger.country))return;
@@ -2037,11 +2169,24 @@ function renderFriends(){
     el.innerHTML='<div class="empty-state"><div class="empty-icon">💜</div><p>No friends yet.<br/>Meet someone and add them!</p></div>';return;
   }
   el.innerHTML=S.friends.map(c=>`
-    <div class="glass2 conn-item">
+    <div class="glass2 conn-item" style="position:relative">
       <div class="c-av">${c.avatar}</div>
-      <div style="flex:1"><div class="c-name">${c.name} ${c.flag}</div><div class="c-last">${c.country}</div></div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-        <div class="c-time">${c.time}</div>${c.online?'<div class="c-dot"></div>':''}
+      <div style="flex:1;min-width:0">
+        <div class="c-name">${c.name} ${c.flag}</div>
+        <div class="c-last">${c.country}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="friend-call-btn ${c.online?'':'offline'}" 
+          onclick="${c.online?`callFriend('${c.id}','${c.name}','${c.avatar}')`:''}"
+          title="${c.online?'Call '+c.name:'Offline'}" ${c.online?'':''}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.59 3.44 2 2 0 0 1 3.56 1.25h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/>
+          </svg>
+        </button>
+        <div style="text-align:right">
+          <div class="c-time">${c.time}</div>
+          ${c.online?'<div class="c-dot" style="margin-left:auto;margin-top:4px"></div>':'<div style="font-size:.65rem;color:var(--dim);margin-top:4px">offline</div>'}
+        </div>
       </div>
     </div>`).join('');
 }
