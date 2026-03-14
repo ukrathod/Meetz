@@ -195,6 +195,19 @@ io.on('connection', socket => {
 
   socket.on('report', d => console.log(`REPORT ${socket.id.slice(0,6)} → ${d.reason}`));
 
+
+  // Friend calling relay
+  socket.on('call-friend',    d => io.to(d.targetId).emit('incoming-call',   { callerId: socket.id, callerName: d.callerName, callerAvatar: d.callerAvatar }));
+  socket.on('call-accepted',  d => {
+    io.to(d.callerId).emit('call-was-accepted', { acceptorId: socket.id });
+    // Pair them for WebRTC
+    pairs.set(socket.id, d.callerId);
+    pairs.set(d.callerId, socket.id);
+  });
+  socket.on('call-rejected',  d => io.to(d.callerId).emit('call-was-rejected'));
+  socket.on('call-cancelled', d => io.to(d.targetId).emit('call-was-cancelled'));
+
+
   socket.on('disconnect', () => {
     console.log(`- ${socket.id.slice(0,8)}`);
     cleanup(socket.id);
