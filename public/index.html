@@ -1290,7 +1290,22 @@ const ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l
    SOCKET.IO
 ═══════════════════════════════════════════════ */
 const socket=io({transports:['websocket','polling']});
-socket.on('online',n=>{const v=n.toLocaleString();['onlineNum','statOnline'].forEach(id=>document.getElementById(id).textContent=v);});
+
+  
+socket.on('online',n=>{const v=n.toLocaleString();['onlineNum','statOnline'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=v;});});
+socket.on('friend-online', ({ name }) => {
+  S.friends = S.friends.map(f => f.name === name ? { ...f, online: true } : f);
+  localStorage.setItem('mz_f6', JSON.stringify(S.friends));
+  toast(`🟢 ${name} is online!`);
+  if (document.getElementById('s-conn').classList.contains('active')) renderFriends();
+});
+socket.on('friend-offline', ({ name }) => {
+  S.friends = S.friends.map(f => f.name === name ? { ...f, online: false } : f);
+  localStorage.setItem('mz_f6', JSON.stringify(S.friends));
+  if (document.getElementById('s-conn').classList.contains('active')) renderFriends();
+});
+
+  
 socket.on('waiting',({position,online})=>{ document.getElementById('srchQ').textContent=`#${position} in queue · ${online} online`; });
 socket.on('matched',({partnerId,partnerProfile,initiator,reason})=>{
   clearBotTimer();S.partnerId=partnerId;S.isBot=false;
