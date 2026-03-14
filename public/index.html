@@ -1284,8 +1284,17 @@ const BOT_TEXT_REPLIES=["Lol same 😂","Oh wow really!","Haha no way!","100% fr
 const ICEQS=["What's a travel destination on your bucket list?","Dogs 🐶 or Cats 🐱?","If you had a superpower?","Last song on repeat?","Describe yourself in 3 emojis.","Hot take — what's overrated?","Night owl or early bird?","Weirdest thing you've ever Googled?"];
 const TRUTHS=["Most embarrassing thing you've done in public?","A secret you've never told anyone?","Who was your first crush?","Worst lie you've ever told?","Your biggest fear?","Ever stalked someone's social too much? 👀","Most cringe thing you did as a teen?"];
 const DARES=["Voice note doing your best animal impression!","Speak in a different accent for 2 minutes.","Do 10 push-ups right now — honor system!","Describe yourself in only 3 emojis. Go.","Say the alphabet backwards as fast as you can.","Tell the cheesiest joke you know.","Do your best celebrity impression."];
-const ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},{urls:'stun:stun2.l.google.com:19302'},{urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},{urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'}]};
+const ICE={iceServers:[
+  {urls:'stun:stun.l.google.com:19302'},
+  {urls:'stun:stun1.l.google.com:19302'},
+  {urls:'stun:relay.metered.ca:80'},
+  {urls:'turn:standard.relay.metered.ca:80',username:'292efe209928a23b8c893de8',credential:'wlZrpnxdvFBIM6Ky'},
+  {urls:'turn:standard.relay.metered.ca:80?transport=tcp',username:'292efe209928a23b8c893de8',credential:'wlZrpnxdvFBIM6Ky'},
+  {urls:'turn:standard.relay.metered.ca:443',username:'292efe209928a23b8c893de8',credential:'wlZrpnxdvFBIM6Ky'},
+  {urls:'turns:standard.relay.metered.ca:443?transport=tcp',username:'292efe209928a23b8c893de8',credential:'wlZrpnxdvFBIM6Ky'}
+]};
 
+  
 /* ═══════════════════════════════════════════════
    SOCKET.IO
 ═══════════════════════════════════════════════ */
