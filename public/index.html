@@ -661,6 +661,65 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .toast{padding:9px 20px;border-radius:50px;background:rgba(18,18,36,.97);
   border:1px solid var(--bdr);font-size:.8rem;font-weight:600;white-space:nowrap;
   animation:tin .3s ease,tout .3s 2.8s ease forwards;backdrop-filter:blur(16px)}
+
+  
+ /* ── FRIEND CALLING SYSTEM ── */
+.call-notify{
+  position:fixed;top:70px;right:16px;z-index:400;
+  width:300px;padding:16px 18px;border-radius:16px;
+  background:rgba(14,14,31,.97);border:1px solid rgba(124,58,237,.4);
+  backdrop-filter:blur(20px);box-shadow:0 8px 40px rgba(124,58,237,.35);
+  display:none;flex-direction:column;gap:12px;animation:si .3s ease;
+}
+.call-notify.show{display:flex}
+.call-notify-top{display:flex;align-items:center;gap:12px}
+.call-av{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#0d9488);
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;
+  box-shadow:0 0 16px rgba(124,58,237,.5);animation:pulse 1.5s infinite}
+.call-info{flex:1;min-width:0}
+.call-name{font-size:.95rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.call-label{font-size:.74rem;color:var(--sub);margin-top:1px}
+.call-actions{display:flex;gap:8px}
+.call-join{flex:1;padding:10px;border-radius:50px;border:none;cursor:pointer;
+  font-family:var(--f);font-size:.84rem;font-weight:800;
+  background:linear-gradient(135deg,#10b981,#059669);color:#fff;
+  box-shadow:0 0 16px rgba(16,185,129,.4);transition:all .2s}
+.call-join:hover{transform:translateY(-1px)}
+.call-reject{flex:1;padding:10px;border-radius:50px;
+  background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);
+  color:#fca5a5;font-family:var(--f);font-size:.84rem;font-weight:800;cursor:pointer;transition:all .2s}
+.call-reject:hover{background:rgba(239,68,68,.28)}
+
+/* call button on each friend card */
+.friend-call-btn{width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,#10b981,#059669);border:none;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:all .2s;flex-shrink:0;box-shadow:0 0 10px rgba(16,185,129,.4)}
+.friend-call-btn:hover{transform:scale(1.12)}
+.friend-call-btn.offline{background:rgba(255,255,255,.08);box-shadow:none;cursor:not-allowed}
+
+/* outgoing call waiting state */
+.call-waiting{position:fixed;top:70px;right:16px;z-index:400;
+  width:280px;padding:14px 16px;border-radius:14px;
+  background:rgba(14,14,31,.97);border:1px solid rgba(13,148,136,.4);
+  backdrop-filter:blur(20px);display:none;align-items:center;gap:12px;animation:si .3s ease}
+.call-waiting.show{display:flex}
+.call-waiting-txt{flex:1;font-size:.84rem;color:var(--sub)}
+.call-waiting-name{font-weight:800;color:var(--txt);display:block;margin-bottom:2px}
+.call-cancel{padding:7px 16px;border-radius:50px;background:rgba(239,68,68,.15);
+  border:1px solid rgba(239,68,68,.35);color:#fca5a5;font-family:var(--f);
+  font-size:.78rem;font-weight:800;cursor:pointer;transition:all .2s}
+.call-cancel:hover{background:rgba(239,68,68,.28)}
+
+/* camera flip button (mobile only) */
+.cam-flip-btn{display:none;width:42px;height:42px;border-radius:50%;
+  background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);
+  align-items:center;justify-content:center;cursor:pointer;
+  position:absolute;bottom:88px;left:14px;z-index:8;color:#fff;transition:all .2s}
+.cam-flip-btn:hover{background:rgba(255,255,255,.2)}
+@media(max-width:700px){.cam-flip-btn{display:flex}}
+
+  
 </style>
 </head>
 <body>
@@ -897,6 +956,14 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
             <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           </button>
         </div>
+
+
+        <!-- Camera flip (mobile) -->
+      <div class="cam-flip-btn" id="camFlipBtn" onclick="flipCamera()" title="Flip camera">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+      </div>
+
+        
       </div>
     </div>
 
@@ -1073,6 +1140,32 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
     </div>
   </div>
 </section>
+
+
+<!-- INCOMING CALL NOTIFICATION -->
+<div class="call-notify" id="callNotify">
+  <div class="call-notify-top">
+    <div class="call-av" id="callAvEmoji">😊</div>
+    <div class="call-info">
+      <div class="call-name" id="callCallerName">Friend</div>
+      <div class="call-label">📞 Calling you on Meetz…</div>
+    </div>
+  </div>
+  <div class="call-actions">
+    <button class="call-join" onclick="acceptCall()">✓ Join</button>
+    <button class="call-reject" onclick="rejectCall()">✕ Ignore</button>
+  </div>
+</div>
+
+<!-- OUTGOING CALL WAITING -->
+<div class="call-waiting" id="callWaiting">
+  <div class="call-waiting-txt">
+    <span class="call-waiting-name" id="callWaitingName">Friend</span>
+    Ringing… waiting for them to join
+  </div>
+  <button class="call-cancel" onclick="cancelCall()">✕</button>
+</div>
+  
 
 <!-- REPORT -->
 <div class="overlay" id="reportOverlay">
