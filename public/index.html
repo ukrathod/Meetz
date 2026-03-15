@@ -1395,7 +1395,11 @@ function show(id){
   document.getElementById(id).classList.add('active');
   if(id!=='s-chat')stopTimer();
   if(id==='s-conn')renderFriends();
+  // Hide footer on chat screen, show everywhere else
+  const footer=document.getElementById('siteFooter');
+  if(footer) footer.style.display = (id==='s-chat') ? 'none' : 'block';
 }
+ 
 /* Show searching state inline inside rAvatar — no separate page, no popup */
 function showMatchOverlay(){
   if(!document.getElementById('s-chat').classList.contains('active')) show('s-chat');
@@ -2297,8 +2301,9 @@ init();
   </div>
 </section>
 
-  <!-- Footer privacy link -->
-<div style="position:fixed;bottom:8px;left:50%;transform:translateX(-50%);z-index:50;font-size:.7rem;color:var(--dim)">
+  
+<!-- Footer privacy link — hidden on chat screen -->
+<div id="siteFooter" style="position:fixed;bottom:8px;left:50%;transform:translateX(-50%);z-index:50;font-size:.7rem;color:var(--dim);pointer-events:all">
   <span onclick="show('s-privacy')" style="cursor:pointer;text-decoration:underline">Privacy Policy</span>
   &nbsp;·&nbsp;
   <span style="color:var(--dim)">© 2025 Meetz</span>
