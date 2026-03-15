@@ -217,4 +217,40 @@ io.on('connection', socket => {
 setInterval(broadcast, 8000);
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 Meetz v4 → http://localhost:${PORT}`));
+server.listen(PORT, () => {
+  console.log(`🚀 Meetz → http://localhost:${PORT}`);
+  // Keep-alive ping — prevents Render free tier from sleeping
+  const siteUrl = process.env.RENDER_EXTERNAL_URL;
+  if (siteUrl) {
+    setInterval(() => {
+      fetch(siteUrl + '/api/stats')
+        .then(() => console.log('✅ Keep-alive ping sent'))
+        .catch(() => console.log('⚠️ Keep-alive ping failed'));
+    }, 10 * 60 * 1000); // every 10 minutes
+  }
+});
+```
+
+Commit the change.
+
+---
+
+## STEP 2 — Add Environment Variable in Render
+
+1. Go to **render.com** → your meetz service
+2. Click **"Environment"** tab
+3. Click **"Add Environment Variable"**
+4. Add:
+
+| Key | Value |
+|-----|-------|
+| `RENDER_EXTERNAL_URL` | `https://meetz.onrender.com` |
+
+5. Click **Save Changes** — Render redeploys automatically
+
+---
+
+## How It Works
+```
+Every 10 minutes:
+Your server pings itself → Render thinks traffic is active → Never sleeps
