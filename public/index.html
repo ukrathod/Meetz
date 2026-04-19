@@ -377,8 +377,8 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .g-close:hover{color:var(--txt)}
 
 /* games menu */
-.games-menu{display:flex;gap:10px;margin-bottom:16px}
-.gm-opt{flex:1;padding:14px 10px;border-radius:12px;background:var(--surface);
+.games-menu{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.gm-opt{flex:1;min-width:80px;padding:14px 10px;border-radius:12px;background:var(--surface);
   border:1.5px solid var(--bdr2);cursor:pointer;transition:all .2s;text-align:center}
 .gm-opt:hover{border-color:var(--bdr);background:rgba(124,58,237,.1)}
 .gm-opt.active{border-color:var(--v2);background:rgba(124,58,237,.15)}
@@ -787,6 +787,20 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   position:absolute;bottom:88px;left:14px;z-index:8;color:#fff;transition:all .2s}
 .cam-flip-btn:hover{background:rgba(255,255,255,.2)}
 @media(max-width:700px){.cam-flip-btn{display:flex}}
+
+/* ── ROCK PAPER SCISSORS ── */
+.rps-btn{display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:14px 18px;border-radius:16px;border:2px solid var(--bdr2);
+  background:var(--surface);cursor:pointer;transition:all .22s;
+  font-family:var(--f);color:var(--txt)}
+.rps-btn:hover:not([disabled]){border-color:var(--v2);background:rgba(124,58,237,.15);transform:translateY(-3px) scale(1.04)}
+.rps-btn.selected{border-color:var(--v2);background:rgba(124,58,237,.22);transform:translateY(-2px)}
+.rps-btn[disabled]{opacity:.5;cursor:not-allowed}
+.rps-emoji{font-size:2.4rem;line-height:1}
+.rps-lbl{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--sub)}
+.rps-rules{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+  padding:10px 0 2px;font-size:.7rem;color:var(--dim);font-weight:600}
+.rps-rules span{padding:3px 10px;border-radius:50px;background:rgba(255,255,255,.04);border:1px solid var(--bdr2)}
 
   
 </style>
@@ -1419,6 +1433,9 @@ const S={
   recentPartners:[],
   // XOX game state (replaces old TTT)
   xoxBoard:Array(9).fill(null),xoxTurn:'X',xoxMyMark:'X',xoxActive:false,xoxSize:3,
+  // RPS game state
+  rpsActive:false,rpsRound:0,rpsTotalRounds:3,rpsMyScore:0,rpsTheirScore:0,
+  rpsMyChoice:null,rpsTheirChoice:null,rpsTimer:null,rpsCountdownIv:null,
   // Camera consent state
   camApproved:false,camPending:false,camReqTimer:null,
   // Call history (last 5)
@@ -1469,8 +1486,39 @@ const BOT_VOICE_REPLIES=[
   "Oh wow I didn't know that","Yeah I agree with you"
 ];
 
-const BOT_TEXT_OPENERS=["Hey! What's up 👋","Hi there 😊","Hello! Where you from?","Heyy what's your vibe?","Wassup! 🙂","Hey stranger 👀","Namaste! 🙏","Hiii 💜"];
-const BOT_TEXT_REPLIES=["Lol same 😂","Oh wow really!","Haha no way!","100% fr","Tell me more 👀","Same here tbh","Omg same!","That's so cool","Fr fr 🔥","Haha stop 😂","Interesting 🤔","Mood tbh","No way 😭"];
+const BOT_TEXT_OPENERS=["Hey! What's up 👋","Hi there 😊","Hello! Where you from?","Heyy what's your vibe?","Wassup! 🙂","Hey stranger 👀","Namaste! 🙏","Hiii 💜","Yooo! Finally someone fun 😄","Oh heyy, didn't expect to match so fast lol"];
+const BOT_TEXT_REPLIES=["Lol same 😂","Oh wow really!","Haha no way!","100% fr","Tell me more 👀","Same here tbh","Omg same!","That's so cool","Fr fr 🔥","Haha stop 😂","Interesting 🤔","Mood tbh","No way 😭","Okay now I'm curious 👀","Wait seriously? 😮","Hahaha okay okay","That's actually lowkey cool ngl","Yesss exactly!!"];
+
+// Bot messages to invite games — varied so they don't feel scripted
+const BOT_GAME_INVITES_TOD=[
+  "omg wanna play truth or dare? 👀","hey lets play truth or dare lol","bored? truth or dare? 🎯",
+  "can we play truth or dare i'm feeling brave today lmao","yo truth or dare? unless you're scared 😏"
+];
+const BOT_GAME_INVITES_TTT=[
+  "wanna play tic tac toe? 😄","lets play xox! i'll destroy you 😂","tic tac toe? loser buys coffee ☕",
+  "omg lets play ttt i'm actually good at it","you down for a quick tic tac toe? 🎮"
+];
+const BOT_GAME_INVITES_RPS=[
+  "rock paper scissors? best of 3! ✊","lets play rock paper scissors 😎",
+  "rps? i never lose btw 😂","wanna do rock paper scissors? quick game!","omg lets do rps its so fun"
+];
+// Bot T or D answers — predefined variety
+const BOT_TOD_TRUTH_ANSWERS=[
+  "omg okay so once i texted my crush by accident 😭","lol my biggest fear is probably running out of wifi tbh",
+  "ngl i've definitely stalked someone's insta for like 2 hours 👀","okay okay my most embarrassing moment... i tripped in front of my whole class 💀",
+  "my secret? i still sleep with a stuffed toy don't judge 😅","honestly my first crush was my neighbor when i was like 10 lol"
+];
+const BOT_TOD_DARE_RESPONSES=[
+  "omg okay i actually did it lmaooo 😂","haha okay that was harder than expected ngl",
+  "done! your turn to suffer 😈","lol i can't believe i just did that 💀","okay okay I did it, happy? 😅"
+];
+// Bot sometimes suggests text chat over voice — natural variety
+const BOT_CHAT_OVER_VOICE=[
+  "btw can we just chat? like text only, voice is laggy rn for me 😅",
+  "hey is it okay if we just text? my mic's being weird lol",
+  "ngl i prefer texting sometimes, voice feels weird idk 😂",
+  "let's just chat here! more fun tbh 💬"
+];
 const ICEQS=["What's a travel destination on your bucket list?","Dogs 🐶 or Cats 🐱?","If you had a superpower?","Last song on repeat?","Describe yourself in 3 emojis.","Hot take — what's overrated?","Night owl or early bird?","Weirdest thing you've ever Googled?"];
 const TRUTHS=["Most embarrassing thing you've done in public?","A secret you've never told anyone?","Who was your first crush?","Worst lie you've ever told?","Your biggest fear?","Ever stalked someone's social too much? 👀","Most cringe thing you did as a teen?"];
 const DARES=["Voice note doing your best animal impression!","Speak in a different accent for 2 minutes.","Do 10 push-ups right now — honor system!","Describe yourself in only 3 emojis. Go.","Say the alphabet backwards as fast as you can.","Tell the cheesiest joke you know.","Do your best celebrity impression."];
@@ -1534,6 +1582,9 @@ socket.on('xox-move',({idx,mark,size})=>receiveXOXMove(idx,mark,size));
 socket.on('xox-reset',({size,initiator})=>resetXOX(false,size,initiator));
 socket.on('xox-size-change',({size})=>onPartnerSizeChange(size));
 socket.on('xox-open',({size})=>openXOXFromPartner(size));
+socket.on('rps-open',({rounds})=>openRPSFromPartner(rounds));
+socket.on('rps-choice',({choice})=>receiveRPSChoice(choice));
+socket.on('rps-reset',({rounds})=>{ S.rpsRound=0;S.rpsMyScore=0;S.rpsTheirScore=0;S.rpsTotalRounds=rounds||3;openRPSFromPartner(rounds); });
 socket.on('friend-request',()=>{document.getElementById('fpTxt').textContent=`${S.stranger?.name||'Stranger'} wants to be friends!`;document.getElementById('friendPopup').classList.add('show');});
 socket.on('friend-accepted',()=>{toast('🤝 Friend accepted!');saveFriend();});
 // Server confirms both sides should save each other
@@ -1828,17 +1879,35 @@ async function startPeer(initiator){
           remoteStream.addTrack(t);
         }
       });
-      // Show/hide video based on video track state
+      // Show/hide video based on video track state — clears srcObject when no live video (prevents freeze)
       function updateVideoVisibility() {
-        const hasLiveVideo = remoteStream.getVideoTracks().some(t => t.readyState === 'live' && t.enabled);
-        rv.style.display = hasLiveVideo ? 'block' : 'none';
-        document.getElementById('rAvatar').style.display = hasLiveVideo ? 'none' : '';
+        const videoTracks = remoteStream.getVideoTracks();
+        const hasLiveVideo = videoTracks.some(t => t.readyState === 'live' && t.enabled !== false);
+        if (hasLiveVideo) {
+          rv.style.display = 'block';
+          document.getElementById('rAvatar').style.display = 'none';
+        } else {
+          // PRIVACY FIX: hide video and clear srcObject so last frame is NOT shown
+          rv.style.display = 'none';
+          // Remove ended/disabled tracks so no stale frame is retained
+          videoTracks.forEach(t => { if(t.readyState === 'ended' || t.enabled === false) { try { remoteStream.removeTrack(t); } catch(e){} } });
+          document.getElementById('rAvatar').style.display = '';
+        }
       }
       // Listen for unmute (video starts flowing) and ended
       if (e.track.kind === 'video') {
         e.track.onunmute = updateVideoVisibility;
-        e.track.onmute   = updateVideoVisibility;
-        e.track.onended  = updateVideoVisibility;
+        e.track.onmute   = () => {
+          // Immediately hide — partner turned off camera
+          rv.style.display = 'none';
+          document.getElementById('rAvatar').style.display = '';
+        };
+        e.track.onended  = () => {
+          // Track ended — remove it and hide video
+          try { remoteStream.removeTrack(e.track); } catch(ex){}
+          rv.style.display = 'none';
+          document.getElementById('rAvatar').style.display = '';
+        };
         // Also check right now in case it's already live
         setTimeout(updateVideoVisibility, 300);
       }
@@ -2219,7 +2288,11 @@ function openGamesMenu(){
       </div>
       <div class="gm-opt" onclick="openTTT()">
         <span class="gm-icon">⭕</span>
-        <div class="gm-lbl">XOX / Tic Tac Toe</div>
+        <div class="gm-lbl">Tic Tac Toe</div>
+      </div>
+      <div class="gm-opt" onclick="openRPS()">
+        <span class="gm-icon">✊</span>
+        <div class="gm-lbl">Rock Paper Scissors</div>
       </div>
     </div>
     <button class="g-close" onclick="document.getElementById('goverlay').classList.remove('show')">Close</button>
@@ -2251,7 +2324,11 @@ function renderTODData(d){
   addScore(10);
   if(S.isBot){
     setTimeout(()=>{if(S.stranger){
-      addMsg(BOT_TEXT_REPLIES[Math.floor(Math.random()*BOT_TEXT_REPLIES.length)],'them');
+      // Bot gives a real T or D answer based on type
+      const ans = d.isTruth
+        ? BOT_TOD_TRUTH_ANSWERS[Math.floor(Math.random()*BOT_TOD_TRUTH_ANSWERS.length)]
+        : BOT_TOD_DARE_RESPONSES[Math.floor(Math.random()*BOT_TOD_DARE_RESPONSES.length)];
+      addMsg(ans,'them');
       if(Math.random()>.4)VOX.speak(BOT_VOICE_REPLIES[Math.floor(Math.random()*BOT_VOICE_REPLIES.length)],S.stranger.gender);
     }},1800);
   }
@@ -2289,9 +2366,9 @@ function renderXOX(){
   const cellSize=sz===5?'52px':'72px';
   const fs=sz===5?'1.1rem':'1.5rem';
   document.getElementById('gbox').innerHTML=`
-    <div class="gbadge ttt">⭕ XOX ${sz}×${sz}</div>
+    <div class="gbadge ttt">⭕ Tic Tac Toe</div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-      <h3 style="margin:0">Tic Tac Toe</h3>
+      <h3 style="margin:0">Tic Tac Toe ${sz}×${sz}</h3>
       <div style="display:flex;gap:5px">
         <button class="g-size-btn ${sz===3?'active':''}" onclick="switchXOXSize(3)">3×3</button>
         <button class="g-size-btn ${sz===5?'active':''}" onclick="switchXOXSize(5)">5×5</button>
@@ -2356,8 +2433,7 @@ function botXOXMove(){
   },600+Math.random()*900);
 }
 function findBestXOXMove(mark){
-  const sz=S.xoxSize;const b=S.xoxBoard;const need=sz===3?3:4;
-  // Check all lines
+  const sz=S.xoxSize;const b=S.xoxBoard;const need=sz;
   const lines=[];
   for(let r=0;r<sz;r++){const row=[];for(let c=0;c<sz;c++)row.push(r*sz+c);lines.push(row);}
   for(let c=0;c<sz;c++){const col=[];for(let r=0;r<sz;r++)col.push(r*sz+c);lines.push(col);}
@@ -2372,18 +2448,14 @@ function findBestXOXMove(mark){
   return null;
 }
 function checkXOX(){
-  const sz=S.xoxSize;const b=S.xoxBoard;const need=sz===3?3:4;
+  const sz=S.xoxSize;const b=S.xoxBoard;
+  // Win condition: fill the ENTIRE row/col/diagonal (3 for 3x3, 5 for 5x5)
   const lines=[];
   for(let r=0;r<sz;r++){const row=[];for(let c=0;c<sz;c++)row.push(r*sz+c);lines.push(row);}
   for(let c=0;c<sz;c++){const col=[];for(let r=0;r<sz;r++)col.push(r*sz+c);lines.push(col);}
-  // Diagonals
-  for(let r=0;r<=sz-need;r++){
-    for(let c=0;c<=sz-need;c++){
-      const d1=[],d2=[];
-      for(let k=0;k<need;k++){d1.push((r+k)*sz+(c+k));d2.push((r+k)*sz+(c+need-1-k));}
-      lines.push(d1,d2);
-    }
-  }
+  // Only full main diagonals (prevents false 4-in-a-row diagonal wins on 5x5)
+  const d1=[],d2=[];for(let i=0;i<sz;i++){d1.push(i*sz+i);d2.push(i*sz+(sz-1-i));}
+  lines.push(d1,d2);
   for(const line of lines){
     const vals=line.map(i=>b[i]);
     if(vals[0]&&vals.every(v=>v===vals[0])){
@@ -2417,6 +2489,203 @@ function resetXOX(broadcast=true,size,isInit){
 }
 
 /* ═══════════════════════════════════════════════
+   ROCK PAPER SCISSORS GAME
+═══════════════════════════════════════════════ */
+const RPS_CHOICES=['rock','paper','scissors'];
+const RPS_EMOJI={rock:'✊',paper:'🖐️',scissors:'✌️'};
+const RPS_BEATS={rock:'scissors',paper:'rock',scissors:'paper'};
+const RPS_DEFEATS={rock:'scissors 🎉',paper:'rock 🎉',scissors:'paper 🎉'};
+const RPS_LABELS={rock:'Rock',paper:'Paper',scissors:'Scissors'};
+
+function openRPS(rounds){
+  rounds=rounds||S.rpsTotalRounds||3;
+  S.rpsActive=true;S.rpsRound=0;S.rpsMyScore=0;S.rpsTheirScore=0;
+  S.rpsTotalRounds=rounds;S.rpsMyChoice=null;S.rpsTheirChoice=null;
+  clearInterval(S.rpsCountdownIv);clearTimeout(S.rpsTimer);
+  if(!S.isBot) socket.emit('rps-open',{rounds});
+  renderRPS();
+  document.getElementById('goverlay').classList.add('show');
+  // Auto-start after short delay
+  setTimeout(()=>rpsNextRound(),400);
+}
+function openRPSFromPartner(rounds){
+  rounds=rounds||3;
+  S.rpsActive=true;S.rpsRound=0;S.rpsMyScore=0;S.rpsTheirScore=0;
+  S.rpsTotalRounds=rounds;S.rpsMyChoice=null;S.rpsTheirChoice=null;
+  clearInterval(S.rpsCountdownIv);clearTimeout(S.rpsTimer);
+  renderRPS();
+  document.getElementById('goverlay').classList.add('show');
+  toast(`${S.stranger?.name||'Stranger'} started Rock Paper Scissors! ✊`);
+  setTimeout(()=>rpsNextRound(),400);
+}
+
+function renderRPS(phase,result){
+  const rounds=S.rpsTotalRounds;
+  const el=document.getElementById('gbox');
+  if(!el)return;
+
+  if(phase==='result'){
+    // Show result of this round
+    const myE=RPS_EMOJI[S.rpsMyChoice]||'❓';
+    const theirE=RPS_EMOJI[S.rpsTheirChoice]||'❓';
+    let resultTxt='';
+    if(!S.rpsTheirChoice){ resultTxt=`<span style="color:var(--green)">⏱ Time's up — you win this round!</span>`; }
+    else if(!S.rpsMyChoice){ resultTxt=`<span style="color:var(--red)">⏱ You didn't pick in time — they win this round</span>`; }
+    else if(S.rpsMyChoice===S.rpsTheirChoice){ resultTxt=`<span style="color:var(--gold)">🤝 Tie!</span>`; }
+    else if(RPS_BEATS[S.rpsMyChoice]===S.rpsTheirChoice){ resultTxt=`<span style="color:var(--green)">🎉 You win this round!</span>`; }
+    else { resultTxt=`<span style="color:var(--red)">😅 They win this round</span>`; }
+
+    el.innerHTML=`
+      <div class="gbadge" style="background:rgba(124,58,237,.18);color:var(--v2)">✊ Rock Paper Scissors</div>
+      <h3 style="margin-bottom:2px">Round ${S.rpsRound} of ${rounds}</h3>
+      <div style="display:flex;align-items:center;justify-content:center;gap:28px;margin:14px 0;font-size:3.2rem">
+        <div style="text-align:center">
+          <div>${myE}</div>
+          <div style="font-size:.72rem;color:var(--sub);margin-top:4px">You</div>
+        </div>
+        <div style="font-size:1.4rem;color:var(--sub)">vs</div>
+        <div style="text-align:center">
+          <div>${theirE}</div>
+          <div style="font-size:.72rem;color:var(--sub);margin-top:4px">${S.stranger?.name||'They'}</div>
+        </div>
+      </div>
+      <div style="font-size:.95rem;font-weight:700;margin-bottom:10px;text-align:center">${resultTxt}</div>
+      <div style="display:flex;gap:20px;justify-content:center;margin-bottom:14px">
+        <div style="text-align:center"><div style="font-size:1.6rem;font-weight:900;color:var(--green)">${S.rpsMyScore}</div><div style="font-size:.68rem;color:var(--sub)">You</div></div>
+        <div style="font-size:1.4rem;color:var(--sub);line-height:2">—</div>
+        <div style="text-align:center"><div style="font-size:1.6rem;font-weight:900;color:var(--red)">${S.rpsTheirScore}</div><div style="font-size:.68rem;color:var(--sub)">${S.stranger?.name||'Them'}</div></div>
+      </div>
+      ${S.rpsRound>=rounds
+        ? `<div style="font-size:1rem;font-weight:800;margin-bottom:12px;text-align:center;color:${S.rpsMyScore>S.rpsTheirScore?'var(--green)':S.rpsMyScore<S.rpsTheirScore?'var(--red)':'var(--gold)'}">
+            ${S.rpsMyScore>S.rpsTheirScore?'🏆 You won the match!':S.rpsMyScore<S.rpsTheirScore?'💔 They won the match!':'🤝 Match Draw!'}
+           </div>
+           <button class="g-new" onclick="openRPS(${rounds})">🔄 Rematch</button>`
+        : `<button class="g-new" onclick="rpsNextRound()">▶ Next Round</button>`}
+      <button class="g-close" onclick="document.getElementById('goverlay').classList.remove('show');S.rpsActive=false;clearInterval(S.rpsCountdownIv);clearTimeout(S.rpsTimer)">Close</button>
+    `;
+    return;
+  }
+
+  // Picking phase
+  const secLeft=typeof phase==='number'?phase:3;
+  el.innerHTML=`
+    <div class="gbadge" style="background:rgba(124,58,237,.18);color:var(--v2)">✊ Rock Paper Scissors</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <h3 style="margin:0">Round ${S.rpsRound+1} of ${rounds}</h3>
+      <div style="display:flex;gap:5px">
+        <button class="g-size-btn ${rounds===3?'active':''}" onclick="openRPS(3)">3 Rounds</button>
+        <button class="g-size-btn ${rounds===5?'active':''}" onclick="openRPS(5)">5 Rounds</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:20px;justify-content:center;margin-bottom:10px">
+      <div style="text-align:center"><div style="font-size:1.4rem;font-weight:900;color:var(--green)">${S.rpsMyScore}</div><div style="font-size:.68rem;color:var(--sub)">You</div></div>
+      <div style="font-size:1rem;color:var(--sub);line-height:2">—</div>
+      <div style="text-align:center"><div style="font-size:1.4rem;font-weight:900;color:var(--red)">${S.rpsTheirScore}</div><div style="font-size:.68rem;color:var(--sub)">${S.stranger?.name||'Them'}</div></div>
+    </div>
+    <div id="rpsCountdown" style="font-size:2.2rem;font-weight:900;text-align:center;margin-bottom:8px;color:${secLeft<=1?'var(--red)':secLeft===2?'var(--gold)':'var(--v2)'}">${secLeft}</div>
+    <p class="ttt-status" style="margin-bottom:10px">${S.rpsMyChoice?`You picked ${RPS_EMOJI[S.rpsMyChoice]} — waiting…`:'Pick now! ⬇️'}</p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px">
+      ${RPS_CHOICES.map(c=>`
+        <button class="rps-btn ${S.rpsMyChoice===c?'selected':''}" onclick="rpsPickChoice('${c}')" ${S.rpsMyChoice?'disabled':''}>
+          <span class="rps-emoji">${RPS_EMOJI[c]}</span>
+          <span class="rps-lbl">${RPS_LABELS[c]}</span>
+        </button>`).join('')}
+    </div>
+    <div class="rps-rules">
+      <span>✊ beats ✌️</span><span>🖐️ beats ✊</span><span>✌️ beats 🖐️</span>
+    </div>
+    <button class="g-close" onclick="document.getElementById('goverlay').classList.remove('show');S.rpsActive=false;clearInterval(S.rpsCountdownIv);clearTimeout(S.rpsTimer)">Close</button>
+  `;
+}
+
+function rpsStartCountdown(){
+  clearInterval(S.rpsCountdownIv);
+  let sec=3;
+  S.rpsCountdownIv=setInterval(()=>{
+    sec--;
+    const cd=document.getElementById('rpsCountdown');
+    if(cd){
+      cd.textContent=sec;
+      cd.style.color=sec<=1?'var(--red)':sec===2?'var(--gold)':'var(--v2)';
+    }
+    renderRPS(sec); // re-render with updated timer color
+    if(sec<=0){
+      clearInterval(S.rpsCountdownIv);
+      // Time's up — resolve round
+      if(!S.rpsMyChoice) rpsResolveBotOrTimeout();
+    }
+  },1000);
+  renderRPS(3);
+}
+
+function rpsPickChoice(choice){
+  if(S.rpsMyChoice||!S.rpsActive)return;
+  S.rpsMyChoice=choice;
+  renderRPS(0); // show "waiting" state
+  if(!S.isBot){
+    socket.emit('rps-choice',{choice});
+    // If they already chose (received before us), resolve
+    if(S.rpsTheirChoice) rpsResolveRound();
+  } else {
+    // Bot picks after 0.5-1.5s
+    setTimeout(()=>{
+      S.rpsTheirChoice=RPS_CHOICES[Math.floor(Math.random()*3)];
+      clearInterval(S.rpsCountdownIv);
+      rpsResolveRound();
+    },500+Math.random()*1000);
+  }
+}
+
+function receiveRPSChoice(theirChoice){
+  S.rpsTheirChoice=theirChoice;
+  if(S.rpsMyChoice) rpsResolveRound();
+  // else wait for our pick — timer will resolve
+}
+
+function rpsResolveBotOrTimeout(){
+  // Called when timer runs out — if no pick, opponent wins this round
+  if(!S.rpsTheirChoice) S.rpsTheirChoice=RPS_CHOICES[Math.floor(Math.random()*3)];
+  rpsResolveRound();
+}
+
+function rpsResolveRound(){
+  clearInterval(S.rpsCountdownIv);
+  clearTimeout(S.rpsTimer);
+  S.rpsRound++;
+  const my=S.rpsMyChoice;const their=S.rpsTheirChoice;
+  if(!my&&their){ S.rpsTheirScore++; }
+  else if(my&&!their){ S.rpsMyScore++; }
+  else if(my&&their&&my!==their){
+    if(RPS_BEATS[my]===their) S.rpsMyScore++;
+    else S.rpsTheirScore++;
+  }
+  // Tie: no score change
+  renderRPS('result');
+  // Bot reacts with message
+  if(S.isBot&&S.stranger){
+    setTimeout(()=>{
+      const botReactions=["haha okay okay 😂","no way!!! 😭","ooh getting good now 🔥","lmaooo","you're good at this 😮"];
+      addMsg(botReactions[Math.floor(Math.random()*botReactions.length)],'them');
+    },800);
+  }
+  addScore(S.rpsMyChoice&&RPS_BEATS[S.rpsMyChoice]===S.rpsTheirChoice?15:5);
+}
+
+function rpsNextRound(){
+  S.rpsMyChoice=null;S.rpsTheirChoice=null;
+  renderRPS(3);
+  rpsStartCountdown();
+  S.rpsTimer=setTimeout(()=>{
+    if(!S.rpsMyChoice)rpsResolveBotOrTimeout();
+  },3500);
+}
+
+// Auto-start countdown when game opens
+function _rpsAutoStart(){
+  rpsNextRound();
+}
+
+/* ═══════════════════════════════════════════════
    TIMER & SCORE
 ═══════════════════════════════════════════════ */
 function startTimer(){
@@ -2426,12 +2695,34 @@ function startTimer(){
     const m=Math.floor(S.timer/60),s=S.timer%60;
     document.getElementById('timerEl').textContent=`${m}:${s.toString().padStart(2,'0')}`;
     if(S.timer%15===0)addScore(5);
-    // Bot occasional voice line every 45s
+    // Bot occasional message every 45s with game invites and variety
     if(S.isBot&&S.timer%45===0&&S.stranger){
-      const lines=["You're interesting to talk to!","So what do you like to do for fun?","Have you used Meetz before?","Tell me something fun about yourself!"];
-      const line=lines[Math.floor(Math.random()*lines.length)];
-      addMsg(line,'them');
-      VOX.speak(line,S.stranger.gender);
+      const roll=Math.random();
+      if(roll<0.22){
+        // Invite to Truth or Dare
+        const inv=BOT_GAME_INVITES_TOD[Math.floor(Math.random()*BOT_GAME_INVITES_TOD.length)];
+        addMsg(inv,'them');
+        // Auto-play T or D after 2s if user doesn't respond
+        setTimeout(()=>{ if(S.isBot&&S.stranger){ openTOD(); } },2500);
+      } else if(roll<0.40){
+        // Invite to Tic Tac Toe
+        const inv=BOT_GAME_INVITES_TTT[Math.floor(Math.random()*BOT_GAME_INVITES_TTT.length)];
+        addMsg(inv,'them');
+        setTimeout(()=>{ if(S.isBot&&S.stranger){ openTTT(); } },2500);
+      } else if(roll<0.55){
+        // Invite to Rock Paper Scissors
+        const inv=BOT_GAME_INVITES_RPS[Math.floor(Math.random()*BOT_GAME_INVITES_RPS.length)];
+        addMsg(inv,'them');
+        setTimeout(()=>{ if(S.isBot&&S.stranger){ openRPS(); } },2500);
+      } else if(roll<0.65){
+        // Suggest text chat
+        const chatMsg=BOT_CHAT_OVER_VOICE[Math.floor(Math.random()*BOT_CHAT_OVER_VOICE.length)];
+        addMsg(chatMsg,'them');
+      } else {
+        // Regular engaging message
+        const lines=["You're interesting to talk to!","So what do you like to do for fun?","Have you used Meetz before?","Tell me something fun about yourself!","What's your go-to when you're bored?","okay random q but pineapple on pizza yes or no 🍕"];
+        addMsg(lines[Math.floor(Math.random()*lines.length)],'them');
+      }
     }
   },1000);
 }
