@@ -272,6 +272,11 @@ io.on('connection', socket => {
   });
   socket.on('xox-size-change', d => { const p = pairs.get(socket.id); if (p) io.to(p).emit('xox-size-change', { size: d.size }); });
 
+  // Rock Paper Scissors — real-time synced
+  socket.on('rps-open',   d => { const p = pairs.get(socket.id); if (p) io.to(p).emit('rps-open',   { rounds: d.rounds }); });
+  socket.on('rps-choice', d => { const p = pairs.get(socket.id); if (p) io.to(p).emit('rps-choice', { choice: d.choice }); });
+  socket.on('rps-reset',  d => { const p = pairs.get(socket.id); if (p) io.to(p).emit('rps-reset',  { rounds: d.rounds }); });
+
   socket.on('update-filters', ({ filters }) => {
     const u = users.get(socket.id);
     if (u) { u.filters = { ...u.filters, ...filters }; users.set(socket.id, u); }
