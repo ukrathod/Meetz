@@ -9,7 +9,7 @@
      crossorigin="anonymous"></script> 
 
 
-<meta name="description" content="Meetz is the best free anonymous chat app. Talk to random strangers worldwide via video, voice or text. No signup. Better than Omegle, AirTalk, Flingster."/>
+<meta name="description" content="Meetz — Free anonymous voice & text chat with strangers worldwide. No camera, no signup, no pressure. Real conversations instantly. Better than Omegle, Whisperly, AirTalk."/>
 <meta name="keywords" content="talk to strangers, random video chat, omegle alternative, free video chat, anonymous chat, meet strangers online, meetz"/>
 <meta name="robots" content="index,follow"/>
 <link rel="canonical" href="https://meetz.onrender.com/"/>
@@ -125,7 +125,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .home-title{font-size:clamp(2rem,5vw,3.6rem);font-weight:900;letter-spacing:-.04em;
   line-height:1.06;margin-bottom:14px;animation:fu .5s .1s both}
 .home-sub{color:var(--sub);font-size:.93rem;line-height:1.75;margin-bottom:28px;animation:fu .5s .15s both}
-.home-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:36px;animation:fu .5s .2s both}
+.home-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px;animation:fu .5s .2s both}
 .btn-main{display:inline-flex;align-items:center;gap:7px;padding:13px 32px;
   border-radius:50px;border:none;cursor:pointer;font-family:var(--f);
   font-size:.93rem;font-weight:800;background:linear-gradient(135deg,#7c3aed,#a78bfa);
@@ -135,6 +135,18 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   border-radius:50px;background:var(--surface);border:1px solid var(--bdr2);
   color:var(--sub);font-family:var(--f);font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s}
 .btn-outline:hover{border-color:var(--bdr);color:var(--txt)}
+/* Live pulse row */
+.live-pulse-row{display:inline-flex;align-items:center;gap:7px;margin-bottom:16px;
+  padding:5px 14px;border-radius:50px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);
+  font-size:.74rem;font-weight:700;color:var(--green);animation:fu .4s ease}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.5s infinite}
+/* Trust badges */
+.trust-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.trust-item{padding:5px 12px;border-radius:50px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  font-size:.72rem;font-weight:700;color:var(--sub)}
+/* Pulsing start button */
+@keyframes btnGlow{0%,100%{box-shadow:0 0 28px rgba(124,58,237,.5)}50%{box-shadow:0 0 48px rgba(124,58,237,.85),0 0 80px rgba(124,58,237,.25)}}
+.btn-pulse{animation:btnGlow 2.5s ease-in-out infinite}
 
 /* filter panel */
 .fp-wrap{width:100%;max-width:520px;margin:0 auto;animation:fu .4s both}
@@ -280,6 +292,12 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 .s-info{flex:1;min-width:0}
 .s-name{font-size:.88rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .s-meta{font-size:.7rem;color:rgba(255,255,255,.55);margin-top:1px}
+.mode-toggle-chip{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:50px;
+  background:rgba(124,58,237,.15);border:1px solid var(--bdr);
+  font-size:.68rem;font-weight:800;color:var(--v2);cursor:pointer;
+  transition:all .2s;white-space:nowrap;flex-shrink:0}
+.mode-toggle-chip:hover{background:rgba(124,58,237,.28)}
+.mode-toggle-chip.text-mode{background:rgba(13,148,136,.15);border-color:var(--bdr3);color:var(--t2)}
 .timer-chip{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:50px;
   background:rgba(16,185,129,.14);border:1px solid rgba(16,185,129,.3);
   font-size:.7rem;font-weight:800;color:var(--green);flex-shrink:0}
@@ -826,26 +844,44 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 <section class="screen z1" id="s-gate">
   <div class="gate-wrap glass">
     <div class="gate-logo-big">Meetz</div>
-    <div class="gate-tag">Talk. Connect. Vibe.</div>
+    <div class="gate-tag">Voice · Text · Real People</div>
     <h2>What should we call you?</h2>
-    <p>No email. No signup. Just a nickname — saved in your browser forever.</p>
+    <p>No email. No signup. Just a nickname — you're anonymous, always.</p>
     <input class="name-inp" id="nameInp" placeholder="Your nickname…" maxlength="20"
       onkeydown="if(event.key==='Enter')enterApp()"/>
-    <button class="go-btn" onclick="enterApp()">Enter Meetz →</button>
-    <div class="gate-note">18+ only. By continuing you agree to our community guidelines.</div>
+    <button class="go-btn" onclick="enterApp()">Start Talking →</button>
+    <div class="gate-note">18+ only · Anonymous · No recordings · No data stored</div>
   </div>
 </section>
 
 <!-- HOME -->
 <section class="screen z1" id="s-home">
   <div class="home-inner">
-    <div class="home-badge">✦ Next-Gen Stranger Platform</div>
-    <h1 class="home-title">Meet Someone<br/><span class="grad-pink">Unexpected.</span></h1>
-    <p class="home-sub">Random people. Real conversations. Video, audio, or text — your way. Smart matching, zero bots, zero paywalls.</p>
-    <div class="home-btns">
-      <button class="btn-main" onclick="toggleFP()">🎙️ Start Talking</button>
-      <button class="btn-outline" onclick="show('s-conn')">💜 My Friends</button>
+    <!-- Live pulse indicator -->
+    <div class="live-pulse-row">
+      <div class="live-dot"></div>
+      <span id="livePulseText">People are talking right now</span>
     </div>
+
+    <div class="home-badge">✦ Voice · Text · Games · No Camera Pressure</div>
+    <h1 class="home-title">Real Voices.<br/><span class="grad-pink">Real People. Right Now.</span></h1>
+    <p class="home-sub">Anonymous voice & text chat with strangers worldwide — no camera, no signup, no pressure. Just real conversations that feel like late-night calls with a new friend.</p>
+
+    <!-- Quick start: single big button -->
+    <div class="home-btns">
+      <button class="btn-main btn-pulse" onclick="quickStart()">🎙️ Start Talking Now</button>
+      <button class="btn-outline" onclick="toggleFP()">⚙️ Set Preferences</button>
+    </div>
+
+    <!-- Trust badges row -->
+    <div class="trust-row">
+      <div class="trust-item">🔒 100% Anonymous</div>
+      <div class="trust-item">⚡ Match in Seconds</div>
+      <div class="trust-item">🌍 190+ Countries</div>
+      <div class="trust-item">🎮 3 Games Built-in</div>
+      <div class="trust-item">🌙 Always On</div>
+    </div>
+
     <div class="fp-wrap" id="fpWrap" style="display:none">
       <div class="glass fp-card">
         <button class="fp-close" onclick="toggleFP()">✕</button>
@@ -869,9 +905,9 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
           <div class="fg">
             <div class="fg-label">Chat Mode</div>
             <select class="fg-select" id="fMode">
-              <option value="audio">🎙️ Audio</option>
-              <option value="video">📹 Video</option>
+              <option value="audio">🎙️ Voice</option>
               <option value="text">💬 Text</option>
+              <!-- VIDEO MODE DISABLED: <option value="video">📹 Video</option> -->
             </select>
           </div>
           <div class="fg">
@@ -888,7 +924,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
         <div class="mood-row" id="moodPills">
           <button class="mood-pill on" data-m="chill"    onclick="pickMood(this)">😌 Chill</button>
           <button class="mood-pill"    data-m="timepass" onclick="pickMood(this)">🎭 Timepass</button>
-          <button class="mood-pill"    data-m="horny" onclick="pickMood(this)">😜 Fun/Sarcasm</button>
+          <button class="mood-pill"    data-m="horny"    onclick="pickMood(this)">😜 Fun/Sarcasm</button>
           <button class="mood-pill"    data-m="friends"  onclick="pickMood(this)">🤝 Make Friends</button>
           <button class="mood-pill"    data-m="lonely"   onclick="pickMood(this)">🫂 Feeling Lonely</button>
           <button class="mood-pill"    data-m="bored"    onclick="pickMood(this)">😴 Just Bored</button>
@@ -917,7 +953,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
       <!-- What is Meetz -->
       <div class="glass2" style="padding:28px;border-radius:16px;margin-bottom:20px;text-align:left">
         <h2 style="font-size:1.2rem;font-weight:800;margin-bottom:10px;background:linear-gradient(135deg,#a78bfa,#2dd4bf);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">What is Meetz?</h2>
-        <p style="color:var(--sub);font-size:.88rem;line-height:1.8">Meetz is a free anonymous chat platform where you can talk to random strangers from around the world via voice, video, or text — instantly, with no signup required. Whether you want to make new friends, practice a language, kill boredom, or just have a real conversation with someone new, Meetz connects you in seconds.</p>
+        <p style="color:var(--sub);font-size:.88rem;line-height:1.8">Meetz is a free anonymous voice & text chat platform. Talk to real strangers worldwide — no camera, no signup, no judgment. Just open your mic and start a genuine conversation. Switch to text anytime. Play games together. Add friends. It feels like a late-night call with someone new — every time.</p>
       </div>
 
       <!-- Features grid -->
@@ -1031,7 +1067,9 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   <div class="chat-shell">
     <!-- MEDIA -->
     <div class="chat-main">
+      <!-- VIDEO ELEMENTS DISABLED — voice & text only for now; re-enable in next expansion
       <video id="remoteVideo" autoplay playsinline></video>
+      -->
 
       <!-- Avatar area -->
       <div class="r-avatar" id="rAvatar">
@@ -1078,7 +1116,9 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
         </div>
       </div>
 
+      <!-- LOCAL VIDEO DISABLED — re-enable in next expansion
       <video id="localVideo" autoplay playsinline muted></video>
+      -->
 
       <!-- Top bar -->
       <div class="s-topbar">
@@ -1088,6 +1128,11 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
           <div class="s-meta" id="sMetaEl">🌍 Somewhere</div>
         </div>
         <div class="timer-chip"><div class="tl"></div><span id="timerEl">0:00</span></div>
+        <!-- Voice/Text mode toggle — Whisperly-inspired mid-chat mode switch -->
+        <div class="mode-toggle-chip" id="modeToggleChip" onclick="switchChatMode()" title="Switch between Voice and Text">
+          <span id="modeToggleIcon">🎙️</span>
+          <span id="modeToggleLbl">Voice</span>
+        </div>
         <div class="topbar-acts">
           <div class="tb-btn" onclick="openReport()" title="Report">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
@@ -1141,19 +1186,22 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
           <button class="ic-btn btn-mic" id="btnMic" onclick="toggleMic()">
             <svg id="btnMicIcon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
           </button>
+          <!-- CAMERA DISABLED — voice & text only for now; re-enable in next expansion
           <button class="ic-btn btn-cam" id="btnCam" onclick="toggleCam()">
             <svg id="btnCamIcon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
           </button>
+          -->
           <button class="ic-btn btn-like" id="btnLike" onclick="likeStranger()">
             <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           </button>
         </div>
 
 
-        <!-- Camera flip (mobile) -->
-      <div class="cam-flip-btn" id="camFlipBtn" onclick="flipCamera()" title="Flip camera">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
-      </div>
+        <!-- CAMERA FLIP DISABLED — video off for now
+        <div class="cam-flip-btn" id="camFlipBtn" onclick="flipCamera()" title="Flip camera">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+        </div>
+        -->
 
         
       </div>
@@ -1348,7 +1396,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   <button class="call-cancel" onclick="cancelCall()">✕</button>
 </div>
 
-<!-- CAMERA CONSENT POPUP -->
+<!-- CAMERA CONSENT POPUP — DISABLED (video off for now; re-enable in next expansion)
 <div class="cam-consent" id="camConsentPopup">
   <div class="cam-consent-icon">📹</div>
   <div class="cam-consent-title"><span id="camConsentName">Stranger</span> wants to turn on camera</div>
@@ -1358,6 +1406,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
     <button class="cam-deny" onclick="denyCam()">✕ Decline</button>
   </div>
 </div>
+-->
 
 <!-- CALL HISTORY PANEL -->
 <div class="hist-panel" id="histPanel">
@@ -1426,7 +1475,7 @@ const F={gender:'any',country:'any',mood:'chill',codes:[],mode:'audio'};
 const S={
   name:'',stranger:null,partnerId:null,
   timer:0,tiv:null,score:0,
-  micOn:true,camOn:false,liked:false,stopTap:0,
+  micOn:true,camOn:false,liked:false,stopTap:0,chatMode:'voice',
   localStream:null,videoStream:null,pc:null,isBot:false,
   friends:JSON.parse(localStorage.getItem('mz_f6')||'[]'),
   reactOpen:false,botTimer:null,cycleIv:null,
@@ -1572,7 +1621,22 @@ socket.on('partner-left',()=>{
   stopPeer();setTimeout(()=>reQueue(),2000);
 });
 socket.on('offer',async({from,sdp})=>{if(!S.pc)return;try{await S.pc.setRemoteDescription({type:'offer',sdp});const a=await S.pc.createAnswer();await S.pc.setLocalDescription(a);socket.emit('answer',{to:from,sdp:a.sdp});}catch(e){}});
-socket.on('answer',async({sdp})=>{try{if(S.pc)await S.pc.setRemoteDescription({type:'answer',sdp});}catch(e){}});
+socket.on('answer',async({sdp})=>{
+  try{
+    if(S.pc) await S.pc.setRemoteDescription({type:'answer',sdp});
+    // After renegotiation, check if remote video track was removed (camera off)
+    setTimeout(()=>{
+      const rv=document.getElementById('remoteVideo');
+      if(!rv||rv.style.display==='none')return;
+      // If no active video tracks, clear frozen frame
+      const hasVideo = rv.srcObject?.getVideoTracks().some(t=>t.readyState==='live'&&!t.muted);
+      if(!hasVideo){
+        rv.pause();rv.srcObject=null;rv.style.display='none';
+        document.getElementById('rAvatar').style.display='';
+      }
+    },300);
+  }catch(e){}
+});
 socket.on('ice',async({candidate})=>{try{if(S.pc&&candidate)await S.pc.addIceCandidate(candidate);}catch(e){}});
 socket.on('chat',({text})=>addMsg(text,'them'));
 socket.on('reaction',({emoji})=>spawnReact(emoji));
@@ -1679,6 +1743,30 @@ function hideMatchOverlay(){
 /* ═══════════════════════════════════════════════
    FILTER PANEL
 ═══════════════════════════════════════════════ */
+// Quick start — begin matching immediately with current settings
+function quickStart(){
+  F.country = document.getElementById('fCountry')?.value || F.country || 'any';
+  F.mode    = document.getElementById('fMode')?.value    || F.mode    || 'audio';
+  F.mood    = document.getElementById('fMoodSel')?.value || F.mood    || 'chill';
+  F.codes   = [];
+  _doMatch();
+}
+
+// Live pulse text rotation
+const LIVE_TEXTS=[
+  'People are talking right now',
+  'Someone is waiting for you',
+  'New conversations starting now',
+  'Connect instantly — no wait',
+  'Real people, real voices'
+];
+let liveTxtIdx=0;
+function rotateLiveText(){
+  const el=document.getElementById('livePulseText');
+  if(el){liveTxtIdx=(liveTxtIdx+1)%LIVE_TEXTS.length;el.textContent=LIVE_TEXTS[liveTxtIdx];}
+}
+setInterval(rotateLiveText, 3500);
+
 function toggleFP(){
   const w=document.getElementById('fpWrap');
   const open=w.style.display==='none'||!w.style.display;
@@ -1799,7 +1887,10 @@ function buildStranger(p,reason){
 function enterChat(initiator){
   clearInterval(S.cycleIv);
   hideMatchOverlay();
-  S.liked=false;S.score=0;S.stopTap=0;S.camOn=false;S.camApproved=false;S.camPending=false;
+  S.liked=false;S.score=0;S.stopTap=0;S.camOn=false;S.camApproved=false;S.camPending=false;S.chatMode='voice';
+  // Reset mode chip to voice
+  const mc=document.getElementById('modeToggleChip');
+  if(mc){mc.classList.remove('text-mode');const mi=document.getElementById('modeToggleIcon');const ml=document.getElementById('modeToggleLbl');if(mi)mi.textContent='🎙️';if(ml)ml.textContent='Voice';}
   const s=S.stranger;
   const isF=s.gender==='Female';
 
@@ -1868,47 +1959,45 @@ async function startPeer(initiator){
     S.localStream=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
     S.pc=new RTCPeerConnection(ICE);
     S.localStream.getTracks().forEach(t=>S.pc.addTrack(t,S.localStream));
-    // FIX: Use a persistent MediaStream so late-arriving tracks (video added after call starts) work
+    // remoteVideo is disabled (voice only) — guard with null check
     const remoteStream = new MediaStream();
-    const rv = document.getElementById('remoteVideo');
-    rv.srcObject = remoteStream;
+    const rv = document.getElementById('remoteVideo'); // will be null (video disabled)
+    if(rv) rv.srcObject = remoteStream;
     S.pc.ontrack = e => {
-      // Add each track only once
+      // Add each track only once (audio tracks for voice)
       e.streams[0].getTracks().forEach(t => {
         if (!remoteStream.getTracks().find(x => x.id === t.id)) {
           remoteStream.addTrack(t);
         }
       });
-      // Show/hide video based on video track state — clears srcObject when no live video (prevents freeze)
-      function updateVideoVisibility() {
-        const videoTracks = remoteStream.getVideoTracks();
-        const hasLiveVideo = videoTracks.some(t => t.readyState === 'live' && t.enabled !== false);
-        if (hasLiveVideo) {
-          rv.style.display = 'block';
-          document.getElementById('rAvatar').style.display = 'none';
-        } else {
-          // PRIVACY FIX: hide video and clear srcObject so last frame is NOT shown
-          rv.style.display = 'none';
-          // Remove ended/disabled tracks so no stale frame is retained
-          videoTracks.forEach(t => { if(t.readyState === 'ended' || t.enabled === false) { try { remoteStream.removeTrack(t); } catch(e){} } });
-          document.getElementById('rAvatar').style.display = '';
+      // Video track handlers — kept for future expansion but rv is null now
+      if (e.track.kind === 'video' && rv) {
+        function updateVideoVisibility() {
+          const videoTracks = remoteStream.getVideoTracks();
+          const hasLiveVideo = videoTracks.some(t => t.readyState === 'live' && t.enabled !== false);
+          if (hasLiveVideo) {
+            rv.style.display = 'block';
+            document.getElementById('rAvatar').style.display = 'none';
+          } else {
+            rv.pause();
+            rv.srcObject = null;
+            rv.style.display = 'none';
+            document.getElementById('rAvatar').style.display = '';
+            rv.srcObject = new MediaStream(remoteStream.getAudioTracks());
+          }
         }
-      }
-      // Listen for unmute (video starts flowing) and ended
-      if (e.track.kind === 'video') {
         e.track.onunmute = updateVideoVisibility;
-        e.track.onmute   = () => {
-          // Immediately hide — partner turned off camera
-          rv.style.display = 'none';
-          document.getElementById('rAvatar').style.display = '';
+        e.track.onmute = () => {
+          rv.pause(); rv.srcObject=null; rv.style.display='none';
+          document.getElementById('rAvatar').style.display='';
+          rv.srcObject=new MediaStream(remoteStream.getAudioTracks());
         };
-        e.track.onended  = () => {
-          // Track ended — remove it and hide video
-          try { remoteStream.removeTrack(e.track); } catch(ex){}
-          rv.style.display = 'none';
-          document.getElementById('rAvatar').style.display = '';
+        e.track.onended = () => {
+          try{remoteStream.removeTrack(e.track);}catch(ex){}
+          rv.pause(); rv.srcObject=null; rv.style.display='none';
+          document.getElementById('rAvatar').style.display='';
+          rv.srcObject=new MediaStream(remoteStream.getAudioTracks());
         };
-        // Also check right now in case it's already live
         setTimeout(updateVideoVisibility, 300);
       }
     };
@@ -1932,12 +2021,11 @@ function stopPeer(){
   S.localStream?.getTracks().forEach(t=>t.stop());S.localStream=null;
   S.videoStream?.getTracks().forEach(t=>t.stop());S.videoStream=null;
   S.pc?.close();S.pc=null;
+  // remoteVideo/localVideo are disabled — guard with null checks
   const rv=document.getElementById('remoteVideo');
-  // Stop all remote tracks
-  rv.srcObject?.getTracks().forEach(t=>t.stop());
-  rv.srcObject=null;rv.style.display='none';
-  document.getElementById('localVideo').style.display='none';
-  document.getElementById('localVideo').srcObject=null;
+  if(rv){rv.srcObject?.getTracks().forEach(t=>t.stop());rv.srcObject=null;rv.style.display='none';}
+  const lv=document.getElementById('localVideo');
+  if(lv){lv.style.display='none';lv.srcObject=null;}
   document.getElementById('rAvatar').style.display='';
 }
 
@@ -1959,127 +2047,56 @@ function toggleMic(){
   document.getElementById('audioWave').classList.toggle('muted',!S.micOn);
   toast(S.micOn?'🎙️ Mic on':'🔇 Muted');
 }
-async function toggleCam(){
-  if(!S.camOn){
-    // Camera consent system — send request first unless bot or already approved
-    if(!S.isBot && S.partnerId && !S.camApproved){
-      socket.emit('cam-request',{requesterName:S.name});
-      S.camPending=true;
-      document.getElementById('btnCam').classList.add('pending');
-      toast('📹 Camera request sent — waiting for approval…');
-      return;
-    }
-    try{
-      const vs=await navigator.mediaDevices.getUserMedia({
-        video:{width:{ideal:1280},height:{ideal:720},facingMode:'user'},
-        audio:false
-      });
-      const vt=vs.getVideoTracks()[0];
-      S.videoStream=vs;
 
-      if(S.pc&&!S.isBot){
-        const existingSender=S.pc.getSenders().find(s=>s.track?.kind==='video');
-        if(existingSender){
-          // Replace existing null/ended track with the live one
-          await existingSender.replaceTrack(vt);
-        } else {
-          // Add brand new video track
-          S.pc.addTrack(vt, S.localStream||vs);
-        }
-        // CRITICAL: renegotiate so remote peer learns about new video track
-        try{
-          S.pc.onnegotiationneeded = null; // prevent double negotiation
-          const offer=await S.pc.createOffer();
-          await S.pc.setLocalDescription(offer);
-          socket.emit('offer',{to:S.partnerId,sdp:offer.sdp});
-        }catch(err){ console.warn('cam renegotiate err',err); }
-      }
-
-      const lv=document.getElementById('localVideo');
-      lv.srcObject=vs; lv.style.display='block';
-      S.camOn=true; S.camApproved=false; S.camPending=false;
-      document.getElementById('btnCam').classList.add('on');
-      document.getElementById('btnCam').classList.remove('pending');
-      document.getElementById('btnCamIcon').innerHTML=CAM_ON;
-      toast('📹 Camera on');
-    }catch(e){
-      S.camPending=false; S.camApproved=false;
-      document.getElementById('btnCam').classList.remove('pending');
-      toast('⚠️ Camera blocked — check browser settings');
-    }
-  }else{
-    // Turn off — stop tracks & replace sender with null so remote knows
-    const vSenders=S.pc ? S.pc.getSenders().filter(s=>s.track?.kind==='video') : [];
-    S.videoStream?.getVideoTracks().forEach(t=>t.stop());
-    S.videoStream=null;
-    // Replace track with null so remote peer gets the "video ended" signal
-    for(const sender of vSenders){
-      try{ await sender.replaceTrack(null); }catch(e){}
-    }
-    // Renegotiate off
-    if(S.pc&&!S.isBot&&S.partnerId){
-      try{
-        const offer=await S.pc.createOffer();
-        await S.pc.setLocalDescription(offer);
-        socket.emit('offer',{to:S.partnerId,sdp:offer.sdp});
-      }catch(e){}
-    }
-    document.getElementById('localVideo').style.display='none';
-    document.getElementById('localVideo').srcObject=null;
-    S.camOn=false; S.camApproved=false; S.camPending=false;
-    document.getElementById('btnCam').classList.remove('on','pending');
-    document.getElementById('btnCamIcon').innerHTML=CAM_OFF;
-    toast('📵 Camera off');
+/* ── Voice ↔ Text mode switch (Whisperly-inspired) ── */
+function switchChatMode(){
+  S.chatMode = S.chatMode === 'text' ? 'voice' : 'text';
+  const chip = document.getElementById('modeToggleChip');
+  const icon = document.getElementById('modeToggleIcon');
+  const lbl  = document.getElementById('modeToggleLbl');
+  if(S.chatMode === 'text'){
+    chip.classList.add('text-mode');
+    if(icon) icon.textContent = '💬';
+    if(lbl)  lbl.textContent  = 'Text';
+    // Mute mic when switching to text mode
+    if(S.micOn){ S.micOn=false; S.localStream?.getAudioTracks().forEach(t=>t.enabled=false); document.getElementById('btnMic')?.classList.add('off'); document.getElementById('audioWave')?.classList.add('muted'); }
+    toast('💬 Text mode — mic muted');
+    // Slide open the chat drawer on mobile
+    if(window.innerWidth<=700) document.getElementById('mobDrawer')?.classList.add('open');
+  } else {
+    chip.classList.remove('text-mode');
+    if(icon) icon.textContent = '🎙️';
+    if(lbl)  lbl.textContent  = 'Voice';
+    // Restore mic
+    if(!S.micOn){ S.micOn=true; S.localStream?.getAudioTracks().forEach(t=>t.enabled=true); document.getElementById('btnMic')?.classList.remove('off'); document.getElementById('audioWave')?.classList.remove('muted'); }
+    toast('🎙️ Voice mode — mic back on');
   }
 }
+/* ═══════════════════════════════════════════════
+   CAMERA / VIDEO — DISABLED (voice & text only)
+   All camera code preserved in comments below for next expansion.
+   To re-enable: restore toggleCam full body, camera consent handlers,
+   flipCamera, <video> elements, and <button id="btnCam"> in HTML.
+═══════════════════════════════════════════════ */
+async function toggleCam(){
+  // CAMERA DISABLED — voice & text only for now
+  toast('📵 Camera coming soon in the next update!');
+}
+/* FULL CAMERA CODE (re-enable when needed):
+async function toggleCam(){
+  if(!S.camOn){
+    if(!S.isBot&&S.partnerId&&!S.camApproved){socket.emit('cam-request',{requesterName:S.name});S.camPending=true;document.getElementById('btnCam')?.classList.add('pending');toast('📹 Camera request sent…');return;}
+    try{const vs=await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720},facingMode:'user'},audio:false});const vt=vs.getVideoTracks()[0];S.videoStream=vs;if(S.pc&&!S.isBot){const ex=S.pc.getSenders().find(s=>s.track?.kind==='video');if(ex)await ex.replaceTrack(vt);else S.pc.addTrack(vt,S.localStream||vs);try{const o=await S.pc.createOffer();await S.pc.setLocalDescription(o);socket.emit('offer',{to:S.partnerId,sdp:o.sdp});}catch(err){}}const lv=document.getElementById('localVideo');if(lv){lv.srcObject=vs;lv.style.display='block';}S.camOn=true;S.camApproved=false;S.camPending=false;document.getElementById('btnCam')?.classList.add('on');document.getElementById('btnCam')?.classList.remove('pending');toast('📹 Camera on');}catch(e){S.camPending=false;S.camApproved=false;document.getElementById('btnCam')?.classList.remove('pending');toast('⚠️ Camera blocked');}
+  }else{const vSenders=S.pc?S.pc.getSenders().filter(s=>s.track?.kind==='video'):[];S.videoStream?.getVideoTracks().forEach(t=>t.stop());S.videoStream=null;for(const s of vSenders)try{await s.replaceTrack(null);}catch(e){}if(S.pc&&!S.isBot&&S.partnerId)try{const o=await S.pc.createOffer();await S.pc.setLocalDescription(o);socket.emit('offer',{to:S.partnerId,sdp:o.sdp});}catch(e){}const lv=document.getElementById('localVideo');if(lv){lv.style.display='none';lv.srcObject=null;}S.camOn=false;S.camApproved=false;S.camPending=false;document.getElementById('btnCam')?.classList.remove('on','pending');toast('📵 Camera off');}
+}
+*/
 
-/* Camera consent handlers */
-function showCamRequest(requesterId, requesterName){
-  // Show consent popup
-  const popup=document.getElementById('camConsentPopup');
-  document.getElementById('camConsentName').textContent=requesterName||'Stranger';
-  popup.classList.add('show');
-  // Store requester id for response
-  popup.dataset.requesterId=requesterId;
-  // Auto-dismiss after 20s (auto-deny)
-  clearTimeout(S.camReqTimer);
-  S.camReqTimer=setTimeout(()=>{
-    if(popup.classList.contains('show')){
-      popup.classList.remove('show');
-      socket.emit('cam-deny',{requesterId});
-    }
-  },20000);
-}
-function approveCam(){
-  const popup=document.getElementById('camConsentPopup');
-  const requesterId=popup.dataset.requesterId;
-  popup.classList.remove('show');
-  clearTimeout(S.camReqTimer);
-  socket.emit('cam-approve',{requesterId});
-  toast('✅ Camera approved');
-}
-function denyCam(){
-  const popup=document.getElementById('camConsentPopup');
-  const requesterId=popup.dataset.requesterId;
-  popup.classList.remove('show');
-  clearTimeout(S.camReqTimer);
-  socket.emit('cam-deny',{requesterId});
-  toast('🚫 Camera request denied');
-}
-function onCamApproved(){
-  // Partner approved our camera request — now actually turn on camera
-  S.camApproved=true;
-  S.camPending=false;
-  document.getElementById('btnCam').classList.remove('pending');
-  toast('✅ Camera approved! Turning on…');
-  toggleCam(); // now proceed
-}
-function onCamDenied(){
-  S.camPending=false;
-  S.camApproved=false;
-  document.getElementById('btnCam').classList.remove('pending');
-  toast(`📵 ${S.stranger?.name||'Partner'} declined your camera request`);
-}
+// Camera consent stubs — socket events won't throw errors
+function showCamRequest(){}
+function approveCam(){}
+function denyCam(){}
+function onCamApproved(){ toast('📵 Camera not available yet'); }
+function onCamDenied(){}
 
 /* Double-tap stop: square → triangle (confirm) → execute skip */
 const ICON_STOP = `<rect x="4" y="4" width="16" height="16" rx="2"/>`;
@@ -2503,20 +2520,17 @@ function openRPS(rounds){
   S.rpsTotalRounds=rounds;S.rpsMyChoice=null;S.rpsTheirChoice=null;
   clearInterval(S.rpsCountdownIv);clearTimeout(S.rpsTimer);
   if(!S.isBot) socket.emit('rps-open',{rounds});
-  renderRPS();
+  renderRPS(); // show picking screen immediately — no timer
   document.getElementById('goverlay').classList.add('show');
-  // Auto-start after short delay
-  setTimeout(()=>rpsNextRound(),400);
 }
 function openRPSFromPartner(rounds){
   rounds=rounds||3;
   S.rpsActive=true;S.rpsRound=0;S.rpsMyScore=0;S.rpsTheirScore=0;
   S.rpsTotalRounds=rounds;S.rpsMyChoice=null;S.rpsTheirChoice=null;
   clearInterval(S.rpsCountdownIv);clearTimeout(S.rpsTimer);
-  renderRPS();
+  renderRPS(); // show picking screen immediately — no timer
   document.getElementById('goverlay').classList.add('show');
   toast(`${S.stranger?.name||'Stranger'} started Rock Paper Scissors! ✊`);
-  setTimeout(()=>rpsNextRound(),400);
 }
 
 function renderRPS(phase,result){
@@ -2529,45 +2543,42 @@ function renderRPS(phase,result){
     const myE=RPS_EMOJI[S.rpsMyChoice]||'❓';
     const theirE=RPS_EMOJI[S.rpsTheirChoice]||'❓';
     let resultTxt='';
-    if(!S.rpsTheirChoice){ resultTxt=`<span style="color:var(--green)">⏱ Time's up — you win this round!</span>`; }
-    else if(!S.rpsMyChoice){ resultTxt=`<span style="color:var(--red)">⏱ You didn't pick in time — they win this round</span>`; }
-    else if(S.rpsMyChoice===S.rpsTheirChoice){ resultTxt=`<span style="color:var(--gold)">🤝 Tie!</span>`; }
+    if(S.rpsMyChoice===S.rpsTheirChoice){ resultTxt=`<span style="color:var(--gold)">🤝 Tie!</span>`; }
     else if(RPS_BEATS[S.rpsMyChoice]===S.rpsTheirChoice){ resultTxt=`<span style="color:var(--green)">🎉 You win this round!</span>`; }
     else { resultTxt=`<span style="color:var(--red)">😅 They win this round</span>`; }
 
     el.innerHTML=`
       <div class="gbadge" style="background:rgba(124,58,237,.18);color:var(--v2)">✊ Rock Paper Scissors</div>
-      <h3 style="margin-bottom:2px">Round ${S.rpsRound} of ${rounds}</h3>
-      <div style="display:flex;align-items:center;justify-content:center;gap:28px;margin:14px 0;font-size:3.2rem">
+      <h3 style="margin-bottom:4px">Round ${S.rpsRound} of ${rounds}</h3>
+      <div style="display:flex;align-items:center;justify-content:center;gap:28px;margin:16px 0;font-size:3.4rem">
         <div style="text-align:center">
           <div>${myE}</div>
-          <div style="font-size:.72rem;color:var(--sub);margin-top:4px">You</div>
+          <div style="font-size:.72rem;color:var(--sub);margin-top:6px;font-weight:700">You</div>
         </div>
         <div style="font-size:1.4rem;color:var(--sub)">vs</div>
         <div style="text-align:center">
           <div>${theirE}</div>
-          <div style="font-size:.72rem;color:var(--sub);margin-top:4px">${S.stranger?.name||'They'}</div>
+          <div style="font-size:.72rem;color:var(--sub);margin-top:6px;font-weight:700">${S.stranger?.name||'They'}</div>
         </div>
       </div>
-      <div style="font-size:.95rem;font-weight:700;margin-bottom:10px;text-align:center">${resultTxt}</div>
-      <div style="display:flex;gap:20px;justify-content:center;margin-bottom:14px">
-        <div style="text-align:center"><div style="font-size:1.6rem;font-weight:900;color:var(--green)">${S.rpsMyScore}</div><div style="font-size:.68rem;color:var(--sub)">You</div></div>
+      <div style="font-size:.98rem;font-weight:800;margin-bottom:12px;text-align:center">${resultTxt}</div>
+      <div style="display:flex;gap:20px;justify-content:center;margin-bottom:16px">
+        <div style="text-align:center"><div style="font-size:1.7rem;font-weight:900;color:var(--green)">${S.rpsMyScore}</div><div style="font-size:.68rem;color:var(--sub)">You</div></div>
         <div style="font-size:1.4rem;color:var(--sub);line-height:2">—</div>
-        <div style="text-align:center"><div style="font-size:1.6rem;font-weight:900;color:var(--red)">${S.rpsTheirScore}</div><div style="font-size:.68rem;color:var(--sub)">${S.stranger?.name||'Them'}</div></div>
+        <div style="text-align:center"><div style="font-size:1.7rem;font-weight:900;color:var(--red)">${S.rpsTheirScore}</div><div style="font-size:.68rem;color:var(--sub)">${S.stranger?.name||'Them'}</div></div>
       </div>
       ${S.rpsRound>=rounds
-        ? `<div style="font-size:1rem;font-weight:800;margin-bottom:12px;text-align:center;color:${S.rpsMyScore>S.rpsTheirScore?'var(--green)':S.rpsMyScore<S.rpsTheirScore?'var(--red)':'var(--gold)'}">
+        ? `<div style="font-size:1rem;font-weight:900;margin-bottom:12px;text-align:center;color:${S.rpsMyScore>S.rpsTheirScore?'var(--green)':S.rpsMyScore<S.rpsTheirScore?'var(--red)':'var(--gold)'}">
             ${S.rpsMyScore>S.rpsTheirScore?'🏆 You won the match!':S.rpsMyScore<S.rpsTheirScore?'💔 They won the match!':'🤝 Match Draw!'}
            </div>
            <button class="g-new" onclick="openRPS(${rounds})">🔄 Rematch</button>`
         : `<button class="g-new" onclick="rpsNextRound()">▶ Next Round</button>`}
-      <button class="g-close" onclick="document.getElementById('goverlay').classList.remove('show');S.rpsActive=false;clearInterval(S.rpsCountdownIv);clearTimeout(S.rpsTimer)">Close</button>
+      <button class="g-close" onclick="document.getElementById('goverlay').classList.remove('show');S.rpsActive=false;">Close</button>
     `;
     return;
   }
 
-  // Picking phase
-  const secLeft=typeof phase==='number'?phase:3;
+  // Picking phase — NO timer, just wait for choice
   el.innerHTML=`
     <div class="gbadge" style="background:rgba(124,58,237,.18);color:var(--v2)">✊ Rock Paper Scissors</div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
@@ -2577,14 +2588,13 @@ function renderRPS(phase,result){
         <button class="g-size-btn ${rounds===5?'active':''}" onclick="openRPS(5)">5 Rounds</button>
       </div>
     </div>
-    <div style="display:flex;gap:20px;justify-content:center;margin-bottom:10px">
-      <div style="text-align:center"><div style="font-size:1.4rem;font-weight:900;color:var(--green)">${S.rpsMyScore}</div><div style="font-size:.68rem;color:var(--sub)">You</div></div>
-      <div style="font-size:1rem;color:var(--sub);line-height:2">—</div>
-      <div style="text-align:center"><div style="font-size:1.4rem;font-weight:900;color:var(--red)">${S.rpsTheirScore}</div><div style="font-size:.68rem;color:var(--sub)">${S.stranger?.name||'Them'}</div></div>
+    <div style="display:flex;gap:20px;justify-content:center;margin-bottom:12px">
+      <div style="text-align:center"><div style="font-size:1.5rem;font-weight:900;color:var(--green)">${S.rpsMyScore}</div><div style="font-size:.68rem;color:var(--sub)">You</div></div>
+      <div style="font-size:1rem;color:var(--sub);line-height:2.2">vs</div>
+      <div style="text-align:center"><div style="font-size:1.5rem;font-weight:900;color:var(--red)">${S.rpsTheirScore}</div><div style="font-size:.68rem;color:var(--sub)">${S.stranger?.name||'Them'}</div></div>
     </div>
-    <div id="rpsCountdown" style="font-size:2.2rem;font-weight:900;text-align:center;margin-bottom:8px;color:${secLeft<=1?'var(--red)':secLeft===2?'var(--gold)':'var(--v2)'}">${secLeft}</div>
-    <p class="ttt-status" style="margin-bottom:10px">${S.rpsMyChoice?`You picked ${RPS_EMOJI[S.rpsMyChoice]} — waiting…`:'Pick now! ⬇️'}</p>
-    <div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px">
+    <p class="ttt-status" style="margin-bottom:12px;font-size:.88rem">${S.rpsMyChoice?`✅ You picked ${RPS_EMOJI[S.rpsMyChoice]} — waiting for ${S.stranger?.name||'them'}…`:'Choose your move ⬇️'}</p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-bottom:16px">
       ${RPS_CHOICES.map(c=>`
         <button class="rps-btn ${S.rpsMyChoice===c?'selected':''}" onclick="rpsPickChoice('${c}')" ${S.rpsMyChoice?'disabled':''}>
           <span class="rps-emoji">${RPS_EMOJI[c]}</span>
@@ -2594,96 +2604,62 @@ function renderRPS(phase,result){
     <div class="rps-rules">
       <span>✊ beats ✌️</span><span>🖐️ beats ✊</span><span>✌️ beats 🖐️</span>
     </div>
-    <button class="g-close" onclick="document.getElementById('goverlay').classList.remove('show');S.rpsActive=false;clearInterval(S.rpsCountdownIv);clearTimeout(S.rpsTimer)">Close</button>
+    <button class="g-close" onclick="document.getElementById('goverlay').classList.remove('show');S.rpsActive=false;">Close</button>
   `;
 }
 
-function rpsStartCountdown(){
-  clearInterval(S.rpsCountdownIv);
-  let sec=3;
-  S.rpsCountdownIv=setInterval(()=>{
-    sec--;
-    const cd=document.getElementById('rpsCountdown');
-    if(cd){
-      cd.textContent=sec;
-      cd.style.color=sec<=1?'var(--red)':sec===2?'var(--gold)':'var(--v2)';
-    }
-    renderRPS(sec); // re-render with updated timer color
-    if(sec<=0){
-      clearInterval(S.rpsCountdownIv);
-      // Time's up — resolve round
-      if(!S.rpsMyChoice) rpsResolveBotOrTimeout();
-    }
-  },1000);
-  renderRPS(3);
+function rpsNextRound(){
+  // No timer — just reset choices and show pick screen
+  S.rpsMyChoice=null;
+  S.rpsTheirChoice=null;
+  renderRPS();
 }
 
 function rpsPickChoice(choice){
-  if(S.rpsMyChoice||!S.rpsActive)return;
-  S.rpsMyChoice=choice;
-  renderRPS(0); // show "waiting" state
+  if(S.rpsMyChoice || !S.rpsActive) return;
+  S.rpsMyChoice = choice;
+  renderRPS(); // show "waiting for opponent" state
   if(!S.isBot){
-    socket.emit('rps-choice',{choice});
-    // If they already chose (received before us), resolve
+    socket.emit('rps-choice', { choice });
+    // If partner already chose (race condition), resolve immediately
     if(S.rpsTheirChoice) rpsResolveRound();
   } else {
-    // Bot picks after 0.5-1.5s
+    // Bot picks randomly after 0.6–1.4s
     setTimeout(()=>{
-      S.rpsTheirChoice=RPS_CHOICES[Math.floor(Math.random()*3)];
-      clearInterval(S.rpsCountdownIv);
+      if(!S.rpsActive) return;
+      S.rpsTheirChoice = RPS_CHOICES[Math.floor(Math.random()*3)];
       rpsResolveRound();
-    },500+Math.random()*1000);
+    }, 600 + Math.random()*800);
   }
 }
 
 function receiveRPSChoice(theirChoice){
-  S.rpsTheirChoice=theirChoice;
+  S.rpsTheirChoice = theirChoice;
+  // Only resolve if we've also picked; otherwise we wait
   if(S.rpsMyChoice) rpsResolveRound();
-  // else wait for our pick — timer will resolve
-}
-
-function rpsResolveBotOrTimeout(){
-  // Called when timer runs out — if no pick, opponent wins this round
-  if(!S.rpsTheirChoice) S.rpsTheirChoice=RPS_CHOICES[Math.floor(Math.random()*3)];
-  rpsResolveRound();
+  // else: we haven't picked yet — store their choice, resolve when we pick
 }
 
 function rpsResolveRound(){
-  clearInterval(S.rpsCountdownIv);
-  clearTimeout(S.rpsTimer);
   S.rpsRound++;
-  const my=S.rpsMyChoice;const their=S.rpsTheirChoice;
-  if(!my&&their){ S.rpsTheirScore++; }
-  else if(my&&!their){ S.rpsMyScore++; }
-  else if(my&&their&&my!==their){
+  const my=S.rpsMyChoice; const their=S.rpsTheirChoice;
+  if(my && their && my!==their){
     if(RPS_BEATS[my]===their) S.rpsMyScore++;
     else S.rpsTheirScore++;
   }
   // Tie: no score change
   renderRPS('result');
+  addScore(my && RPS_BEATS[my]===their ? 15 : 5);
   // Bot reacts with message
-  if(S.isBot&&S.stranger){
+  if(S.isBot && S.stranger){
     setTimeout(()=>{
-      const botReactions=["haha okay okay 😂","no way!!! 😭","ooh getting good now 🔥","lmaooo","you're good at this 😮"];
+      if(!S.stranger) return;
+      const botReactions=["haha okay okay 😂","no way!!! 😭","ooh getting good now 🔥","lmaooo","you're good at this 😮","okay one more round 👀","i'm warming up fr 🔥"];
       addMsg(botReactions[Math.floor(Math.random()*botReactions.length)],'them');
     },800);
   }
-  addScore(S.rpsMyChoice&&RPS_BEATS[S.rpsMyChoice]===S.rpsTheirChoice?15:5);
 }
 
-function rpsNextRound(){
-  S.rpsMyChoice=null;S.rpsTheirChoice=null;
-  renderRPS(3);
-  rpsStartCountdown();
-  S.rpsTimer=setTimeout(()=>{
-    if(!S.rpsMyChoice)rpsResolveBotOrTimeout();
-  },3500);
-}
-
-// Auto-start countdown when game opens
-function _rpsAutoStart(){
-  rpsNextRound();
-}
 
 /* ═══════════════════════════════════════════════
    TIMER & SCORE
@@ -2958,30 +2934,23 @@ function playRingTone(on) {
 
 /* ── CAMERA FLIP (mobile) ── */
 let currentFacingMode = 'user';
+/* FLIP CAMERA — DISABLED (video off for now)
 async function flipCamera() {
   if (!S.camOn) { toast('Turn camera on first 📹'); return; }
   currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
   try {
-    const newStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: currentFacingMode }, audio: false
-    });
+    const newStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:currentFacingMode},audio:false});
     const newTrack = newStream.getVideoTracks()[0];
     const lv = document.getElementById('localVideo');
-    lv.srcObject = newStream;
-    // Replace in peer connection
-    if (S.pc) {
-      const sender = S.pc.getSenders().find(s => s.track?.kind === 'video');
-      if (sender) await sender.replaceTrack(newTrack);
-    }
-    // Stop old video tracks
-    S.videoStream?.getVideoTracks().forEach(t => { if (t !== newTrack) t.stop(); });
-    S.videoStream = newStream;
-    toast(currentFacingMode === 'user' ? '🤳 Front camera' : '📷 Back camera');
-  } catch(e) {
-    toast('⚠️ Camera flip failed');
-    currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user'; // revert
-  }
+    if(lv) lv.srcObject = newStream;
+    if(S.pc){const sender=S.pc.getSenders().find(s=>s.track?.kind==='video');if(sender)await sender.replaceTrack(newTrack);}
+    S.videoStream?.getVideoTracks().forEach(t=>{if(t!==newTrack)t.stop();});
+    S.videoStream=newStream;
+    toast(currentFacingMode==='user'?'🤳 Front camera':'📷 Back camera');
+  }catch(e){toast('⚠️ Camera flip failed');currentFacingMode=currentFacingMode==='user'?'environment':'user';}
 }
+END FLIP CAMERA */
+function flipCamera(){ toast('📵 Camera not available yet'); }
 
 
 function saveFriend(){
